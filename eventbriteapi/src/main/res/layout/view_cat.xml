@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/row_relLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/medium_space">
+
+
+    <ImageView
+        android:id="@+id/row_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter">
+
+    </ImageView>
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/row_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/row_image"
+        android:layout_alignTop="@id/row_image"
+        android:layout_alignRight="@id/row_image"
+        android:layout_alignBottom="@id/row_image"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#FFFFFF"
+        />
+
+</RelativeLayout>
+
+
+<!--        android:background="@drawable/list_selector"-->
+<!--<TextView-->
+
+<!--android:id="@+id/row_item"-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:fontFamily="sans-serif-medium"-->
+<!--android:maxLines="2"-->
+<!--android:paddingLeft="@dimen/large_space"-->
+<!--android:paddingRight="@dimen/large_space"-->
+<!--android:paddingTop="@dimen/medium_space"-->
+<!--android:text="Category"-->
+<!--android:textColor="@color/black"-->
+<!--android:textSize="@dimen/text_material_title"-->
+<!--android:gravity="center"/>-->

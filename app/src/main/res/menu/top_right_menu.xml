@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+
+            android:id="@+id/profile_image"
+            android:title = "123"
+            app:showAsAction = "always"
+            android:icon="@drawable/events"
+            android:padding="16dp"
+            android:layout_gravity="top|end"
+            app:layout_collapseMode="pin">
+            </item>
+
+    <item
+        android:id="@+id/sign_out_menu"
+        android:title="@string/sign_out"/>
+</menu>

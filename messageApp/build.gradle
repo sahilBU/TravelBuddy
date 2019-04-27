@@ -1,0 +1,81 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 27
+   buildToolsVersion "27.1.1"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            useProguard true
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'        }
+    }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
+        exclude 'META-INF/NOTICE'
+    }
+}
+
+dependencies {
+    configurations.all {
+        resolutionStrategy.force 'com.android.support:design:27.1.1'
+    }
+
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+//    compile 'com.android.support:cardview-v7:24.2.1'
+//    compile 'com.android.support:animated-vector-drawable:24.2.1'
+//    compile 'com.android.support:appcompat-v7:24.2.1'
+//    compile 'com.android.support:recyclerview-v7:24.2.1'
+//    compile 'com.android.support:design:24.2.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+
+    testImplementation 'junit:junit:4.12'
+
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:customtabs:27.1.1'
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    implementation 'de.hdodenhof:circleimageview:1.3.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+
+    // Google
+    implementation 'com.google.android.gms:play-services-auth:15.0.1'
+
+    // Firebase
+    implementation 'com.google.firebase:firebase-analytics:15.0.2'
+    implementation 'com.google.firebase:firebase-database:15.0.1'
+    implementation 'com.google.firebase:firebase-storage:15.0.2'
+    implementation 'com.google.firebase:firebase-auth:15.1.0'
+    implementation 'com.google.firebase:firebase-config:15.0.2'
+    implementation 'com.google.android.gms:play-services-appinvite:15.0.2'
+    implementation 'com.google.firebase:firebase-messaging:15.0.2'
+    implementation 'com.google.android.gms:play-services-ads:15.0.1'
+    implementation 'com.google.firebase:firebase-appindexing:15.0.1'
+    implementation 'com.google.firebase:firebase-analytics:15.0.2'
+
+    // Firebase UI
+    implementation 'com.firebaseui:firebase-ui-database:3.3.1'
+
+    //Crashlytics
+    implementation 'com.google.firebase:firebase-crash:15.0.2'
+
+    // Testing dependencies
+    androidTestImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support:support-annotations:27.1.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+
+    implementation 'com.google.android.gms:play-services-auth:9.4.0'
+}
+
+apply plugin: 'com.google.gms.google-services'
+com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true
