@@ -125,7 +125,7 @@ public class ChatRoom extends AppCompatActivity {
         setContentView(R.layout.chat_room);
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        Bundle bundle = getIntent().getExtras();
+        final Bundle bundle = getIntent().getExtras();
         mUsername = bundle.getString("mUsername");
         mPhotoUrl = bundle.getString("mPhotoUrl");
         MESSAGES_CHILD = bundle.getString("chatroom_id");
@@ -242,9 +242,16 @@ public class ChatRoom extends AppCompatActivity {
 
 
                 viewHolder.messengerTextView.setText(friendlyMessage.getName());
+
+                String friendPhotoUrl = bundle.getString("friendPhotoUrl");
                 if (friendlyMessage.getPhotoUrl() == null) {
-                    viewHolder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(ChatRoom.this,
-                            R.drawable.ic_account_circle_black_36dp));
+                    if(friendPhotoUrl == null)
+                        viewHolder.messengerImageView.setImageDrawable(ContextCompat.getDrawable(ChatRoom.this,
+                                R.drawable.ic_account_circle_black_36dp));
+                    else
+                        Glide.with(ChatRoom.this)
+                                .load(friendPhotoUrl)
+                                .into(viewHolder.messengerImageView);
                 } else {
                     Glide.with(ChatRoom.this)
                             .load(friendlyMessage.getPhotoUrl())
@@ -448,4 +455,11 @@ public class ChatRoom extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        startActivity(new Intent(ChatRoom.this, MessageMainActivity.class));
+        finish();
+    }
 }

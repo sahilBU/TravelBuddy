@@ -12,11 +12,15 @@ import com.uber.sdk.android.rides.RideRequestButton;
 import com.uber.sdk.rides.client.ServerTokenSession;
 import com.uber.sdk.rides.client.error.ApiError;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+
 public class UberMainActivity extends AppCompatActivity {
     Double lang1;
     Double lat1;
     Double lang2;
     Double lat2;
+    String eventName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,25 +28,20 @@ public class UberMainActivity extends AppCompatActivity {
         setContentView(R.layout.uber_activity_main);
         try {
             String in = getIntent().getStringExtra("message");
-
-            System.out.println(in+"HFOEWFIOEJ");
-
             String[] parts = in.split(",");
-            String string1 = parts[0];
-            String string2 = parts[1];
+            String string0 = parts[0];
+            String string1 = parts[1];
+            String string2 = parts[2];
+            String string3 = parts[3];
+            String string4 = parts[4];
 
-            System.out.println(string1);  // prints name1
-//                System.out.println(string2);
 
-            lang1 = Double.parseDouble(string1);
-            lat1 = Double.parseDouble(string2);
-            lang2 = Double.parseDouble(string1);
-            lat2 = Double.parseDouble(string2);
 
-//                lang1 = in.getDoubleExtra("location_lang1", 42.331967);
-//                lat1 = in.getDoubleExtra("location_lat1", -71.0201737);
-//                lang2 = in.getDoubleExtra("location_lang2", 0.0);
-//                lat2 = in.getDoubleExtra("location_lat2", 0.0);
+            lang1 = getShorterCoordinate(Double.parseDouble(string3));
+            lat1 = getShorterCoordinate(Double.parseDouble(string2));
+            lang2 = getShorterCoordinate(Double.parseDouble(string1));
+            lat2 = getShorterCoordinate(Double.parseDouble(string0));
+            eventName = string4;
         }
         catch (Exception e){
             System.out.println(e);
@@ -62,8 +61,8 @@ public class UberMainActivity extends AppCompatActivity {
         RideRequestButton requestButton = (RideRequestButton) findViewById(R.id.requestButton);
 
         RideParameters rideParams = new RideParameters.Builder()
-                .setPickupLocation(37.775304, -122.417522, "Uber HQ", "1455 Market Street, San Francisco")
-                .setDropoffLocation(37.795079, -122.4397805, "Embarcadero", "One Embarcadero Center, San Francisco") // Price estimate will only be provided if this is provided.
+                .setPickupLocation(lat2, lang2, "Uber HQ", "1455 Market Street, San Francisco")
+                .setDropoffLocation(lat1, lang1, "Embarcadero", "One Embarcadero Center, San Francisco") // Price estimate will only be provided if this is provided.
                 .setProductId("a1111c8c-c720-46c3-8534-2fcdd730040d") // Optional. If not provided, the cheapest product will be used.
                 .build();
         // set parameters for the RideRequestButton instance
@@ -92,5 +91,13 @@ public class UberMainActivity extends AppCompatActivity {
             }
         };
         requestButton.setCallback(callback);
+    }
+    public static double getShorterCoordinate(double coordinate) {
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+        dfs.setDecimalSeparator('.');
+
+        DecimalFormat decimalFormat = new DecimalFormat("###.######", dfs);
+
+        return Double.parseDouble(decimalFormat.format(coordinate));
     }
 }

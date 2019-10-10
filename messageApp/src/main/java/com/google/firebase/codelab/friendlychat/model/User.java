@@ -6,8 +6,8 @@ public class User {
     private String uid;
     private String bio;
 
-    private float latitude;
-    private float longitute;
+    private double latitude;
+    private double longitute;
 
     private String gender;
     private String age;
@@ -63,19 +63,19 @@ public class User {
         this.bio = bio;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public float getLongitute() {
+    public double getLongitute() {
         return longitute;
     }
 
-    public void setLongitute(float longitute) {
+    public void setLongitute(double longitute) {
         this.longitute = longitute;
     }
 

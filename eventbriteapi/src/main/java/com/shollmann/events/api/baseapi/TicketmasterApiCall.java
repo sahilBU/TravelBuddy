@@ -129,13 +129,13 @@ public class TicketmasterApiCall extends AsyncTask<String , Void ,ArrayList<Hash
                     tixList.put("venueLat", venueLocLatEvent);
                     String venueLocLonEvent = venueLocationEvent.getString("longitude");
                     tixList.put("venueLon", venueLocLonEvent);
-                    System.out.println("TICKETMASTERAPICALL: " + venueLocLatEvent);
+//                    System.out.println("TICKETMASTERAPICALL: " + venueLocLatEvent);
 //                    this.listTickets.add(tixList);
                     listTickets.add(tixList);
                 }
                 catch (JSONException e){
                     Log.e("MYAPP", "unexpected JSON exception", e);
-                    System.out.println("THIS IS TICKETMASTERAPICALLERROR"+this.listTickets.get(0));
+//                    System.out.println("THIS IS TICKETMASTERAPICALLERROR"+this.listTickets.get(0));
                 }
             }
         }

@@ -42,6 +42,7 @@ public  class GoogleMapsMainActivity extends AppCompatActivity implements OnMapR
         Double lat1;
         Double lang2;
         Double lat2;
+        String eventName;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -52,24 +53,20 @@ public  class GoogleMapsMainActivity extends AppCompatActivity implements OnMapR
 
             try {
                 String in = getIntent().getStringExtra("message");
-
-                System.out.println(in+"HFOEWFIOEJ");
-
                 String[] parts = in.split(",");
-                String string1 = parts[0];
-                String string2 = parts[1];
+                String string0 = parts[0];
+                String string1 = parts[1];
+                String string2 = parts[2];
+                String string3 = parts[3];
+                String string4 = parts[4];
 
-                System.out.println(string1);  // prints name1
-//                System.out.println(string2);
 
-                lang1 = Double.parseDouble(string2);
-                lat1 = Double.parseDouble(string1);
 
-                lat2 = Double.parseDouble("42.3584");
-                lang2 = Double.parseDouble("-71.0598");
-
-//                lat2 = location.getLatitude();
-//                lang2 = location.getLongitude();
+                lang1 = Double.parseDouble(string3);
+                lat1 = Double.parseDouble(string2);
+                lang2 = Double.parseDouble(string1);
+                lat2 = Double.parseDouble(string0);
+                eventName = string4;
 
             }
 
@@ -83,8 +80,6 @@ public  class GoogleMapsMainActivity extends AppCompatActivity implements OnMapR
                 startActivity(intent);
                 finish();
             }
-//        float zoomLevel = 16.0f; //This goes up to 21
-//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
 
 
 
@@ -105,14 +100,13 @@ else {
 
                                 googleMap.addMarker(new MarkerOptions()
                                         .position(new LatLng(lat1, lang1))
-                                        .title("Destination")
+                                        .title("Current Location")
                                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
                                 googleMap.addMarker(new MarkerOptions()
                                         .position(new LatLng(lat2, lang2))
-                                        .title("Current Location")
+                                        .title(eventName)
                                         );
-
 
                                     MapsInitializer.initialize(getApplicationContext());
 
@@ -154,34 +148,31 @@ else {
 
             googleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(lat1, lang1))
-                    .title("LinkedIn")
+                    .title("Current Location")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
             googleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(lat2, lang2))
-                    .title("Facebook")
-                    .snippet("Facebook HQ: Menlo Park"));
+                    .title("Destination")
+                    .snippet(eventName));
 
-//            googleMap.addMarker(new MarkerOptions()
-//                    .position(new LatLng(37.3092293, -122.1136845))
-//                    .title("Apple"));
             MapsInitializer.initialize(getApplicationContext());
 
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat1, lang1), 8));
 
         }
 
-        private void checkForLocationPermission() {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
-
-            } else {
-                LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
-                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                System.out.println(location.getLatitude()+location.getLongitude());
-            }
-        }
+//        private void checkForLocationPermission() {
+//            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(this,
+//                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+//                        ACCESS_COARSE_LOCATION_PERMISSION_REQUEST);
+//
+//            } else {
+//                LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+//                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//                System.out.println(location.getLatitude()+location.getLongitude());
+//            }
+//        }
     }
 

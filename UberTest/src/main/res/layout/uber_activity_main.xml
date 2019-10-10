@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UberMainActivity"
+    android:gravity="center"
+    android:background="@drawable/bluewhite"
     xmlns:uber="http://schemas.android.com/apk/res-auto">
 
     <com.uber.sdk.android.rides.RideRequestButton
         android:id="@+id/requestButton"
         android:layout_width="wrap_content"
-        android:layout_height="62dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="296dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/bluewhite"
+        android:clipToPadding="false"
+        android:gravity="center"
         uber:ub__style="black" />
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

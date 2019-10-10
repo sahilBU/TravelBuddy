@@ -6,8 +6,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.content.Intent;
-
+import com.google.firebase.codelab.friendlychat.model.User;
+import com.google.firebase.codelab.friendlychat.model.FirebaseModel;
 import android.net.Uri;
+
+import com.google.firebase.codelab.friendlychat.model.FirebaseModel;
+import com.google.firebase.codelab.friendlychat.model.User;
 import com.shollmann.events.R;
 import com.shollmann.events.api.model.Event;
 import com.shollmann.events.api.model.ExpandableTextView;
@@ -26,6 +30,8 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     private Button btnUber;
     private Button btnGoogleMaps;
     private boolean isTextViewClicked;
+    private FirebaseModel model = new FirebaseModel();
+
     Spannable.Factory spannableFactory;
     ExpandableTextView txtDesc;
 
@@ -44,7 +50,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         return;
     }
 
-    public void setEvent(Event event) {
+    public void setEvent(final Event event) {
         spannableFactory = Spannable.Factory
                 .getInstance();
 
@@ -66,35 +72,42 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
                 String url = curUrl;
                 Intent i = new Intent(Intent.ACTION_VIEW);
-                System.out.println(lat+lon);
                 i.setData(Uri.parse(url));
                 v.getContext().startActivity(i);
-            }
-        });
+                }
+            });
         btnUber.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println(lat+lon);
-                Intent i = new Intent(v.getContext(), com.example.ubertest.UberMainActivity.class);
-//                System.out.println(lat + lon);
-                i.putExtra("message", lat + "," + lon);
-                v.getContext().startActivity(i);
+            public void onClick(final View v) {
+                model.getSingleUser(model.getUid(), new FirebaseModel.MyCallBack() {
+                    @Override
+                    public void onCallback(Object object) {
+                        User this_user = (User) object;
+                        Intent i = new Intent(v.getContext(), com.example.ubertest.UberMainActivity.class);
+                        i.putExtra("message", lat + "," + lon +","+ String.valueOf(this_user.getLatitude())+ "," + String.valueOf(this_user.getLongitute())+","+event.getName().toString());
+                        v.getContext().startActivity(i);
+                    }
+                });
             }
         });
         btnGoogleMaps.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println(lat+lon);
-                try {
-//                    Intent i = new Intent(this, Class.forName("com.journaldev.MapsInAction.GoogleMapsMainActivity"));
-                    Intent i = new Intent(v.getContext(), com.journaldev.MapsInAction.GoogleMapsMainActivity.class);
-                    System.out.println(lat + lon);
-                    i.putExtra("message", lat + "," + lon);
-                    v.getContext().startActivity(i);
-                }
-                catch (Exception e){
-                    System.out.println(e);
-                }
+            public void onClick(final View v) {
+                model.getSingleUser(model.getUid(), new FirebaseModel.MyCallBack() {
+                    @Override
+                    public void onCallback(Object object) {
+                        try {
+                            User this_user = (User) object;
+                            Intent i = new Intent(v.getContext(), com.journaldev.MapsInAction.GoogleMapsMainActivity.class);
+                            i.putExtra("message", lat + "," + lon +","+ String.valueOf(this_user.getLatitude())+ "," +String.valueOf(this_user.getLongitute())+","+event.getName().toString());
+                            v.getContext().startActivity(i);
+
+                        }
+                        catch (Exception e){
+                            System.out.println(e);
+                        }
+                    }
+                });
             }
         });
     }

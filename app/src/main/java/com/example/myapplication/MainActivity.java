@@ -43,7 +43,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.firebaselogindemo.LoginActivity;
+import com.example.firebaselogindemo.SettingsActivity;
 import com.example.weatherappfortravelapp.WeatherMainActivity;
+import com.google.firebase.codelab.friendlychat.model.User;
 import com.shollmann.events.api.EventbriteApi;
 import com.shollmann.events.api.baseapi.TicketmasterApiCall;
 import com.shollmann.events.ui.EventbriteApplication;
@@ -68,6 +70,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
@@ -79,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private Button login_btn;
     private Location current_location;
     private LocationManager locationManager;
-    private LocationListener locationListener;
+    private LocationListener locationListener; 
     private static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 7001;
 
     private ActionBar toolbar;
@@ -97,24 +100,48 @@ public class MainActivity extends AppCompatActivity {
     private boolean read_loc_once = false;
     private double homeLat;
     private double homeLong;
+
+    private double homeLatt =42.3601;
+    private double homeLongg =-71.0589;
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+
+//    HashSet<String> friendsDataModelHashSet = new HashSet<String>();
+//    String friendsDataModelHashSet = "";
+//    ArrayList<User> friendsDataModelArrayList = new ArrayList<User>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkForLocationPermission();
+//        getFriendsList();
 
         if(model.isLogIn() == false){
             try {
                 Intent myIntent = new Intent(MainActivity.this, Class.forName("com.example.firebaselogindemo.LoginActivity"));
                 startActivity(myIntent);
+                finish();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
 
             finish();
+            return;
         }
+
+        model.afterLogin(new FirebaseModel.MyCallBack() {
+            @Override
+            public void onCallback(Object object) {
+                boolean new_user = (boolean) object;
+
+                // navigate to profile change
+                if(new_user == true){
+                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                    finish();
+                }
+            }
+        });
 
         toolbar = getSupportActionBar();
         tempCur = findViewById(R.id.weather_home_temp);
@@ -126,10 +153,18 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        updateEvents();
 
-//        updateWeather("Tokyo");
 
+        model.getSingleUser(model.getUid(), new FirebaseModel.MyCallBack() {
+            @Override
+            public void onCallback(Object object) {
+                User this_user = (User) object;
+                homeLat=this_user.getLatitude();
+                homeLong=this_user.getLongitute();
+                updateWeather(homeLat,homeLong);
+                updateEvents();
+            }
+        });
     }
 
     private void checkForLocationPermission() {
@@ -146,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Acquire a reference to the system Location Manager
             locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
 // Define a listener that responds to location updates
             locationListener = new LocationListener() {
                 public void onLocationChanged(Location location) {
@@ -154,7 +188,10 @@ public class MainActivity extends AppCompatActivity {
                     if(read_loc_once == false) {
                         read_loc_once = true;
                         current_location = location;
-                        updateWeather("Boston");
+                        homeLat=location.getLatitude();
+                        homeLong = location.getLongitude();
+//                        updateWeather(homeLat,homeLong);
+//                        updateEvents();
                         System.out.println(location.getLatitude() + location.getLongitude());
                     }
                 }
@@ -172,95 +209,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    public boolean checkForLocationPermission() {
-//        if (ContextCompat.checkSelfPermission(this,
-//                Manifest.permission. ACCESS_FINE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED) {
-//
-//            // Should we show an explanation?
-//            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-//                    Manifest.permission. ACCESS_FINE_LOCATION)) {
-//
-//                // Show an explanation to the user *asynchronously* -- don't block
-//                // this thread waiting for the user's response! After the user
-//                // sees the explanation, try again to request the permission.
-////                new AlertDialog.Builder(this)
-////                        .setTitle(R.string.title_location_permission)
-////                        .setMessage(R.string.text_location_permission)
-////                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-////                            @Override
-////                            public void onClick(DialogInterface dialogInterface, int i) {
-////                                //Prompt the user once explanation has been shown
-////                                ActivityCompat.requestPermissions(MainActivity.this,
-////                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-////                                        MY_PERMISSIONS_REQUEST_LOCATION);
-////                            }
-////                        })
-////                        .create()
-////                        .show();
-//
-//
-//            } else {
-//                // No explanation needed, we can request the permission.
-//                ActivityCompat.requestPermissions(this,
-//                        new String[]{Manifest.permission. ACCESS_FINE_LOCATION},
-//                        MY_PERMISSIONS_REQUEST_LOCATION);
-//            }
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    }
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode,
-//                                           String permissions[], int[] grantResults) {
-//        switch (requestCode) {
-//            case MY_PERMISSIONS_REQUEST_LOCATION: {
-//                // If request is cancelled, the result arrays are empty.
-//                if (grantResults.length > 0
-//                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//
-//                    // permission was granted, yay! Do the
-//                    // location-related task you need to do.
-//                    if (ContextCompat.checkSelfPermission(this,
-//                            Manifest.permission. ACCESS_FINE_LOCATION)
-//                            == PackageManager.PERMISSION_GRANTED) {
-//                        homeLat=location.getLatitude();
-//                        homeLong=location.getLongitude();
-//                    }
-//
-//                } else {
-//
-//                    // permission denied, boo! Disable the
-//                    // functionality that depends on this permission.
-//
-//                }
-//                return;
-//            }
-//
-//        }
-//    }
 
-    private void updateWeather(String cityname){
+    private void updateWeather(Double curLat, Double curLong){
         RecyclerView recyclerView;
 
         WeatherMainActivity weather_model =  new WeatherMainActivity();
-        // city.setText("Boston");
 
-        forecast=  weather_model.fetchInfo(homeLat,homeLong);
+        forecast=  weather_model.fetchInfo(curLat,curLong);
 
 //        forecast=  weather_model.fetchInfo(location.getLatitude(),location.getLongitude());
         cityCur.setText(forecast.get(0).get("city").toString());
         tempCur.setText(forecast.get(0).get("temp").toString());
         dateCur.setText("Today");
-//        dateCur.setText(com.shollmann.events.helper.DateUtils.getWeatherDate(forecast.get(0).get("date").toString()));
         descCur.setText(forecast.get(0).get("description").toString());
-//        String icon = forecast.get(0).get("icon").toString();
-//        String iconUrl = "http://openweathermap.org/img/w/" + icon + ".png";
-//        if (iconUrl != null) {
-//            Picasso.get().load(iconUrl).into(foreCur);
-//        }
 
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.weather_linear);
         String main = forecast.get(0).get("main").toString();
@@ -301,12 +262,12 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<HashMap> listTickets = new ArrayList<HashMap>();
         RecyclerView recyclerView;
 
-        String url = "https://www.eventbriteapi.com/v3/events/search/?q=&location.latitude=42.332&location.longitude=-71.02&sort_by=date&expand=venue&page=1&token=VBEQ2ZP7SOEWDHH3PVOI ";
-
+        String url = "https://www.eventbriteapi.com/v3/events/search/?q=&location.latitude="+homeLat+"&location.longitude="+homeLong+"&sort_by=date&expand=venue&page=1&token=VBEQ2ZP7SOEWDHH3PVOI ";
+        Log.e("UPDATEEVENTS",Double.toString(homeLat)+Double.toString(homeLong));
 
         try {
             listTickets=new EventbriteHomeApiCall().execute(url).get();
-            System.out.println(listTickets.get(1));
+//            System.out.println(listTickets.get(1));
         }
         catch (
                 ExecutionException e){
@@ -345,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
 
                     return true;
                 case R.id.navigation_message:
-                    toolbar.setTitle("Message");
+                    toolbar.setTitle("Messages");
 
                     try {
                         Intent myIntent = new Intent(MainActivity.this, Class.forName("com.google.firebase.codelab.friendlychat.MessageMainActivity"));
@@ -358,13 +319,24 @@ public class MainActivity extends AppCompatActivity {
                     toolbar.setTitle("Search");
 
                     try {
+//                        getFriendsList();
                         Intent myIntent = new Intent(getApplicationContext(),SwipeMainActivity.class);
+//                        myIntent.putExtra("friendsList", friendsDataModelHashSet);
                         startActivity(myIntent);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     return true;
+                case R.id.profile:
+                    toolbar.setTitle("Profile");
 
+                    try {
+                        Intent myIntent = new Intent(getApplicationContext(),Class.forName("com.example.firebaselogindemo.SettingsActivity"));
+                        startActivity(myIntent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return true;
             }
 
 
@@ -373,6 +345,29 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     };
+
+//    private void getFriendsList(){
+//        model.fetchFriends(model.getUid(), new FirebaseModel.MyCallBack() {
+//            @Override
+//            public void onCallback(Object object) {
+//                friendsDataModelArrayList = (ArrayList<User>) object;
+//                Log.e("FRIENDSMODELARRAYLISTR",friendsDataModelArrayList.get(0).toString());
+//                if (friendsDataModelArrayList== null){
+//                    friendsDataModelHashSet.add(model.getUid());
+////                    friendsDataModelHashSet+=model.getUid();
+//                }
+//                else{
+//                    for (int i=0; i < friendsDataModelArrayList.size(); i++) {
+//                        friendsDataModelHashSet.add(friendsDataModelArrayList.get(i).getUid());
+////                        friendsDataModelHashSet+=friendsDataModelArrayList.get(i).getUid();
+//                    }
+////                    friendsDataModelHashSet.add(model.getUid());
+//                }
+////                friendsDataModelHashSet+=model.getUid();
+//                friendsDataModelHashSet.add(model.getUid());
+//            }
+//        });
+//    }
 
     public boolean onCreateOptionsMenu(final Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -563,13 +558,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     catch (JSONException e){
                         Log.e("MYAPP", "unexpected JSON exception", e);
-                        System.out.println("THIS IS TICKETMASTERAPICALL"+this.listTickets.get(0));
                     }
-                    System.out.println(listTickets.size());
-
-                    System.out.println(listTickets.get(0));
-
-                    System.out.println(this.listTickets.get(0));
                 }
 
             } catch (MalformedURLException e) {

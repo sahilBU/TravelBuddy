@@ -1,17 +1,18 @@
 package com.example.firebaselogindemo;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.example.firebaselogindemo.com.example.firebaselogindemo.model.profile;
 import com.google.firebase.codelab.friendlychat.model.FirebaseModel;
 import com.google.firebase.codelab.friendlychat.model.User;
-import com.google.firebase.database.FirebaseDatabase;
+import com.journaldev.MapsInAction.input_location;
+
+import java.util.ArrayList;
 
 public class CreateProfileActivity extends AppCompatActivity {
 
@@ -25,6 +26,10 @@ public class CreateProfileActivity extends AppCompatActivity {
 
     private ImageView imgPhoto;
     private String url = "";
+
+
+
+    input_location input_location1 = new input_location();
 
     private FirebaseModel model = new FirebaseModel();
 
@@ -63,14 +68,23 @@ public class CreateProfileActivity extends AppCompatActivity {
                 user.setPhone(edtPhone.getText().toString());
                 user.setEmail(edtEmail.getText().toString());
                 user.setLocation(edtLocation.getText().toString());
+
+                ArrayList<Double> latlong = new ArrayList<>();
+                latlong = input_location1.getlatLong(getApplicationContext(), user.getLocation());
+
+                user.setLatitude(latlong.get(0));
+                user.setLongitute(latlong.get(1));
+
+
                 user.setPhotoUrl(url);
                 user.setUid(model.mFirebaseUser.getUid());
 
                 model.mUserDatabase.push().setValue(user);
 
                 try {
-                    Intent myIntent = new Intent(CreateProfileActivity.this, Class.forName("com.example.myapplication.MainActivity"));
+                    Intent myIntent = new Intent(CreateProfileActivity.this, Class.forName("com.example.myapplication.Splash"));
                     startActivity(myIntent);
+                    finish();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }

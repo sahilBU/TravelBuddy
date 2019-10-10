@@ -1,5 +1,9 @@
 package com.shollmann.events.ui.activity;
 
+
+import com.google.firebase.codelab.friendlychat.model.User;
+import com.google.firebase.codelab.friendlychat.model.FirebaseModel;
+
 import android.Manifest;
 import android.app.ActivityManager;
 import android.app.ProgressDialog;
@@ -78,7 +82,7 @@ import org.json.*;
 public class EventsActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private static final int NO_FLAGS = 0;
     private static final int ACCESS_COARSE_LOCATION_PERMISSION_REQUEST = 7001;
-
+    private FirebaseModel model = new FirebaseModel();
     private String curCat;
     private Toolbar toolbar;
     private TextView txtNoResults;
@@ -95,6 +99,9 @@ public class EventsActivity extends AppCompatActivity implements SearchView.OnQu
     private String currentQuery;
     private CallId getEventsCallId;
     private TextView mTMResults;
+
+    private Double curLat;
+    private Double curLong;
     private Map<String, String> catDictionary = new HashMap<String, String>() {{
         put("Music", "103");
         put("TicketMaster","999");
@@ -140,29 +147,38 @@ public class EventsActivity extends AppCompatActivity implements SearchView.OnQu
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         curCat= getIntent().getStringExtra("message");
-        String cat;
-        System.out.println(catDictionary.get(curCat));
-        try {
-            cat = catDictionary.get(curCat);
-            curCat= cat;
-            if (curCat.equals("999")){
-                Intent i = new Intent(getApplicationContext(), EventsTicketmaster.class);
-                startActivity(i);
-            }
-        }
-        catch (Exception e){
-            cat= "";
-            curCat= cat;
-        }
-        eventbriteApi = EventbriteApplication.getApplication().getApiEventbrite();
-//        Intent i = new Intent(getApplicationContext(), EventsTicketmaster.class);
-//        startActivity(i);
 
-        findViews();
-        setupTaskDescription();
-        setupToolbar();
-        setupRecyclerView();
-        checkForLocationPermission();
+        model.getSingleUser(model.getUid(), new FirebaseModel.MyCallBack() {
+            @Override
+            public void onCallback(Object object) {
+                User this_user = (User) object;
+                curLat=(this_user.getLatitude());
+                curLong=(this_user.getLongitute());
+                String cat;
+                try {
+                    cat = catDictionary.get(curCat);
+                    curCat= cat;
+                    if (curCat.equals("999")){
+                        Intent i = new Intent(getApplicationContext(), EventsTicketmaster.class);
+                        i.putExtra("location", curLat.toString()+","+curLong.toString());
+                        startActivity(i);
+                        finish();
+                    }
+                }
+                catch (Exception e){
+                    cat= "";
+                    curCat= cat;
+                }
+                eventbriteApi = EventbriteApplication.getApplication().getApiEventbrite();
+
+                findViews();
+                setupTaskDescription();
+                setupToolbar();
+                setupRecyclerView();
+                checkForLocationPermission();
+            }
+        });
+
     }
 
     public EventAdapter onCreateHelpers(String query){
@@ -173,11 +189,10 @@ public class EventsActivity extends AppCompatActivity implements SearchView.OnQu
         Callback<PaginatedEvents> callback = generateGetEventsCallback();
         eventbriteApi.registerCallback(getEventsCallId, callback);
         try {
-            eventbriteApi.getEvents(query, getShorterCoordinate(42.331967), getShorterCoordinate(-71.0201737
-            ), curCat, "date", "venue", lastPageLoaded, getEventsCallId, callback);
+            eventbriteApi.getEvents(query, curLat, curLong
+            , curCat, "date", "venue", lastPageLoaded, getEventsCallId, callback);
         } catch (IOException e) {
             //TODO
-            System.out.println("HOTESJFOISJEGOIRS");
             e.printStackTrace();
         }
         PreferencesHelper.setLastSearch(query);
@@ -197,7 +212,6 @@ public class EventsActivity extends AppCompatActivity implements SearchView.OnQu
     }
 
     private void updateEventsList(List<Event> eventList) {
-        System.out.println(eventList+"UPDATEEVENTLIST");
         eventAdapter.add(eventList);
         eventAdapter.notifyDataSetChanged();
 
@@ -226,8 +240,8 @@ public class EventsActivity extends AppCompatActivity implements SearchView.OnQu
         Callback<PaginatedEvents> callback = generateGetEventsCallback();
         eventbriteApi.registerCallback(getEventsCallId, callback);
         try {
-            eventbriteApi.getEvents(query, getShorterCoordinate(42.331967), getShorterCoordinate(-71.0201737
-            ), curCat, "date", "venue", lastPageLoaded, getEventsCallId, callback);
+            eventbriteApi.getEvents(query, curLat, curLong
+            , curCat, "date", "venue", lastPageLoaded, getEventsCallId, callback);
         } catch (IOException e) {
             //TODO
             System.out.println("HOTESJFOISJEGOIRS");
@@ -268,7 +282,6 @@ public class EventsActivity extends AppCompatActivity implements SearchView.OnQu
     }
 
     private void handleGetEventsFailure() {
-        System.out.println("HANDLEGETEVENTSFAILURE");
         txtWaitForResults.setVisibility(View.GONE);
         txtNoResults.setVisibility(View.VISIBLE);
     }

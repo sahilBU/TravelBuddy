@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/travel_home"
     tools:context=".LoginActivity">
 
         <TextView
@@ -10,44 +11,62 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:layout_marginLeft="120dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:text="TravelBuddy"
+            android:textColor="@android:color/background_light"
             android:textSize="30dp"
-            />
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/btnSignup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="150dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentStart="true"
             android:layout_marginLeft="150dp"
+            android:layout_below="@id/App"
+            android:layout_marginTop="100dp"
             android:text="Sign up" />
 
         <Button
             android:id="@+id/btnlogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="200dp"
             android:layout_marginLeft="150dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:layout_below="@id/btnSignup"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp"
             android:text="Login in" />
 
-        <EditText
+        <android.support.v7.widget.AppCompatEditText
             android:id="@+id/edtUsername"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="250dp"
-            android:layout_marginLeft="150dp"
-            android:hint="@string/hint_etUser"
-            android:ems="5" />
-
-        <EditText
-            android:id="@+id/edtPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="300dp"
-            android:layout_marginLeft="150dp"
-            android:hint="@string/hint_etPassword"
+            android:layout_below="@id/btnlogin"
+            android:layout_alignParentStart="true"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="100dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@android:color/background_dark"
             android:ems="5"
+            android:hint="@string/hint_etUser" />
+
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/edtPassword"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/edtUsername"
+            android:layout_marginLeft="100dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerInParent="true"
+            android:backgroundTint="@android:color/background_dark"
+            android:layout_marginTop="10dp"
+            android:ems="5"
+            android:hint="@string/hint_etPassword"
             android:inputType="textPassword" />
 
 
@@ -55,7 +74,22 @@
             android:id="@+id/login_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="400dp"
-            android:layout_marginLeft="110dp"/>
+            android:layout_below="@id/edtPassword"
+            android:layout_alignParentStart="true"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:layout_marginStart="105dp"
+            android:layout_marginTop="25dp" />
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/google_sign_in_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/login_button"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="145dp"
+            android:visibility="visible" />
 
 </RelativeLayout>

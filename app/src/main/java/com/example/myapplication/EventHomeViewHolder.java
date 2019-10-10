@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.codelab.friendlychat.model.FirebaseModel;
+import com.google.firebase.codelab.friendlychat.model.User;
 import com.shollmann.events.helper.DateUtils;
 import com.squareup.picasso.Picasso;
 
@@ -39,6 +41,7 @@ public class EventHomeViewHolder extends RecyclerView.ViewHolder {
     private Button btnUrl;
     private Button btnUber;
     private Button btnGoogleMaps;
+    private FirebaseModel model = new FirebaseModel();
 
     public EventHomeViewHolder(View view) {
         super(view);
@@ -54,7 +57,7 @@ public class EventHomeViewHolder extends RecyclerView.ViewHolder {
         return;
     }
 
-    public void setEvent(HashMap event) {
+    public void setEvent(final HashMap event) {
         txtTitle.setText(event.get("name").toString());
         txtDate.setText(com.shollmann.events.helper.DateUtils.getEventDate(event.get("localDate").toString()));
 //        txtDesc.setText(event.get("description").toString());
@@ -81,40 +84,36 @@ public class EventHomeViewHolder extends RecyclerView.ViewHolder {
 
         btnUber.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-
-//                System.out.println(lat+lon);
-//                Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
-//                intent.setComponent(new ComponentName("packagename//com.shollmann.events",
-//                        "classname//com.example.ubertest.UberMainActivity"));
-//                startActivity(intent);
-//                Intent i = new Intent(v.getContext(), EventsActivity.class);
-                try {
-//                    Intent i = new Intent(this, Class.forName("com.journaldev.MapsInAction.GoogleMapsMainActivity"));
-                    Intent i = new Intent(v.getContext(), com.example.ubertest.UberMainActivity.class);
-                    System.out.println(lat + lon);
-                    i.putExtra("message", lat + "," + lon);
-                    v.getContext().startActivity(i);
-                }
-                catch (Exception e){
-                    System.out.println(e);
-                }
+            public void onClick(final View v) {
+                model.getSingleUser(model.getUid(), new FirebaseModel.MyCallBack() {
+                    @Override
+                    public void onCallback(Object object) {
+                        User this_user = (User) object;
+                        Intent i = new Intent(v.getContext(), com.example.ubertest.UberMainActivity.class);
+                        i.putExtra("message", lat + "," + lon +","+ String.valueOf(this_user.getLatitude())+ "," + String.valueOf(this_user.getLongitute())+","+event.get("name"));
+                        v.getContext().startActivity(i);
+                    }
+                });
             }
         });
         btnGoogleMaps.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-//                System.out.println(lat+lon);
-                try {
-//                    Intent i = new Intent(this, Class.forName("com.journaldev.MapsInAction.GoogleMapsMainActivity"));
-                    Intent i = new Intent(v.getContext(), com.journaldev.MapsInAction.GoogleMapsMainActivity.class);
-                    System.out.println(lat + lon);
-                    i.putExtra("message", lat + "," + lon);
-                    v.getContext().startActivity(i);
-                }
-                catch (Exception e){
-                    System.out.println(e);
-                }
+            public void onClick(final View v) {
+                model.getSingleUser(model.getUid(), new FirebaseModel.MyCallBack() {
+                    @Override
+                    public void onCallback(Object object) {
+                        try {
+                            User this_user = (User) object;
+                            Intent i = new Intent(v.getContext(), com.journaldev.MapsInAction.GoogleMapsMainActivity.class);
+                            i.putExtra("message", lat + "," + lon +","+ String.valueOf(this_user.getLatitude())+ "," + String.valueOf(this_user.getLongitute())+","+event.get("name"));
+                            v.getContext().startActivity(i);
+
+                        }
+                        catch (Exception e){
+                            System.out.println(e);
+                        }
+                    }
+                });
             }
         });
     }

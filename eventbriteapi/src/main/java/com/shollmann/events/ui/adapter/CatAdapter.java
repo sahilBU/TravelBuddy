@@ -57,40 +57,42 @@ public class CatAdapter extends RecyclerView.Adapter<CatAdapter.ViewHolder> {
         item.setText(itemList.get(listPosition).getName());
         if (listPosition == 0) {
             itemPic.getLayoutParams().height = 350;
-            itemPic.getLayoutParams().width = 650;
+//            itemPic.getLayoutParams().width = 1000;
             itemPic.setAdjustViewBounds(true);
             itemPic.setBackgroundResource(R.drawable.ticketmaster_music_crowd);
         }
         if (listPosition == 1) {
 //            Picasso.get().load("https://cdn.downunderendeavours.com/wp-content/uploads/2014/08/experience-outdoor-hero-1-new-zealand-hiking-queenstown-2000x837.jpg").centerCrop().into(itemPic);
             itemPic.getLayoutParams().height = 350;
-            itemPic.getLayoutParams().width = 650;
+//            itemPic.getLayoutParams().width = 1000;
 
             itemPic.setAdjustViewBounds(true);
             itemPic.setBackgroundResource(R.drawable.music);
         }
         if (listPosition == 2) {
             itemPic.getLayoutParams().height = 350;
-            itemPic.getLayoutParams().width = 650;
+//            itemPic.getLayoutParams().width = 1000;
 
             itemPic.setAdjustViewBounds(true);
             itemPic.setBackgroundResource(R.drawable.food);
         }
         if (listPosition == 3) {
             itemPic.getLayoutParams().height = 350;
-            itemPic.getLayoutParams().width = 650;
+//            itemPic.getLayoutParams().width = 1000;
 
             itemPic.setAdjustViewBounds(true);
             itemPic.setBackgroundResource(R.drawable.film);
         }
         if (listPosition == 4) {
             itemPic.getLayoutParams().height = 350;
+//            itemPic.getLayoutParams().width = 1000;
+
             itemPic.setAdjustViewBounds(true);
             itemPic.setBackgroundResource(R.drawable.community);
         }
         if (listPosition == 5) {
             itemPic.getLayoutParams().height = 350;
-            itemPic.getLayoutParams().width = 650;
+//            itemPic.getLayoutParams().width = 650;
             itemPic.setAdjustViewBounds(true);
             itemPic.setBackgroundResource(R.drawable.outdoors);
         }

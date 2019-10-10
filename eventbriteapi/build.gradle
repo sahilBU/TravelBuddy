@@ -47,4 +47,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-appindexing:15.0.1'
     implementation project(':UberTest')
     implementation project(':GoogleMaps')
+    implementation project(path: ':messageApp')
+    implementation project(':messageApp')
 }

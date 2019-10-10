@@ -1,6 +1,7 @@
 package com.journaldev.MapsInAction;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -15,7 +16,7 @@ import java.util.List;
 public class input_location extends Activity {
 
 
-   public  input_location(){
+    public  input_location(){
 
     }
 
@@ -52,7 +53,7 @@ public class input_location extends Activity {
                 intent.putExtra("location_lang2", location.get(3));
 
                 startActivity(intent);
-
+                finish();
 
 
             }
@@ -89,10 +90,45 @@ public class input_location extends Activity {
 
             return result; }
 
-            catch (Exception e) {
+        catch (Exception e) {
             return null;
         }
     }
+
+    public ArrayList getlatLong(Context context, String strAddress) {
+
+        Geocoder coder = new Geocoder(context);
+        List<Address> address1;
+
+        ArrayList<Double> result = new ArrayList<>();
+
+        try {
+            address1 = coder.getFromLocationName(strAddress, 1);
+
+
+            if (address1 == null ) {
+                return null;
+            }
+            Address location1 = address1.get(0);
+
+            double lat1 = location1.getLatitude();
+            double lng1 = location1.getLongitude();
+
+
+
+            result.add(lat1);
+            result.add(lng1);
+
+
+            return result;
+        }
+
+        catch (Exception e) {
+            return null;
+        }
+    }
+
+
 
 
 

@@ -31,6 +31,7 @@ public class FirebaseModel {
 
     private ArrayList<User> users;
     private ArrayList<String> friend_ids;
+    private ArrayList<String> request_ids;
     private ArrayList<Comment> comments;
     private User user;
 
@@ -48,7 +49,12 @@ public class FirebaseModel {
 
         users = new ArrayList<User>();
         friend_ids = new ArrayList<String>();
+        request_ids = new ArrayList<String>();
         comments = new ArrayList<Comment>();
+    }
+
+    public String getUid(){
+        return mFirebaseUser.getUid();
     }
 
     public void userSignOut(){
@@ -84,19 +90,36 @@ public class FirebaseModel {
         });
     }
 
-    public void fetchFriends(String uid, final MyCallBack myCallback){
-        friend_ids.clear();
-        Query query = mFriendDatabase.orderByChild("uid1").equalTo(uid);
+    public void cleanupChat(final String uid){
+        Query query_friend = mFriendDatabase;
 
-        query.addValueEventListener(new ValueEventListener() {
+        query_friend.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                        friend_ids.add(snapshot.child("uid2").getValue().toString());
+                        if(snapshot.child("uid1").getValue().toString().equals(uid) || snapshot.child("uid2").getValue().toString().equals(uid))
+                            snapshot.getRef().removeValue();
                     }
+                }
+            }
 
-                    myCallback.onCallback(friend_ids);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        Query query_chat = mChatDatabase;
+
+        query_chat.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        if(snapshot.child("uid1").getValue().toString().equals(uid) || snapshot.child("uid2").getValue().toString().equals(uid))
+                            snapshot.getRef().removeValue();
+                    }
                 }
             }
 
@@ -109,15 +132,138 @@ public class FirebaseModel {
         return;
     }
 
+    public void cleanupRequest(){
+        Query query = mFriendDatabase;
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        if(snapshot.child("chatroom_id").getValue().toString().equals("None"))
+                            snapshot.getRef().removeValue();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return;
+    }
+
+    public void fetchFriends(String uid, final MyCallBack myCallback){
+        friend_ids.clear();
+        Query query = mFriendDatabase.orderByChild("uid1").equalTo(uid);
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        try {
+                            if(!snapshot.child("chatroom_id").getValue().toString().equals("None"))
+                                friend_ids.add(snapshot.child("uid2").getValue().toString());
+                        }
+                        catch(Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                    myCallback.onCallback(friend_ids);
+                }
+                else
+                    myCallback.onCallback(null);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return;
+    }
+
+    public void fetchRequests(String uid, final MyCallBack myCallback){
+        request_ids.clear();
+        Query query = mFriendDatabase.orderByChild("uid2").equalTo(uid);
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        String request_id = snapshot.child("uid1").getValue().toString();
+                        if(!friend_ids.contains(request_id))
+                            request_ids.add(request_id);
+                    }
+
+                    myCallback.onCallback(request_ids);
+                }
+                else
+                    myCallback.onCallback(null);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return;
+    }
+
+    public void deleteRequest(final String uid1, final String uid2, final MyCallBack myCallback){
+        Query query = mFriendDatabase.orderByChild("uid1").equalTo(uid1);
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        try {
+                            String id = snapshot.child("uid2").getValue().toString();
+                            String chatroom_id = snapshot.child("chatroom_id").getValue().toString();
+                            if (id.equals(uid2) && chatroom_id.equals("None"))
+                                snapshot.getRef().removeValue();
+                        }
+                        catch(Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                    myCallback.onCallback(null);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public interface MyCallBack{
         void onCallback(Object object);
     }
 
+
+    public void sendRequest(String uid1, String uid2){
+        String new_id = mFriendDatabase.push().getKey();
+        mFriendDatabase.child(new_id).child("uid1").setValue(uid1);
+        mFriendDatabase.child(new_id).child("uid2").setValue(uid2);
+        mFriendDatabase.child(new_id).child("chatroom_id").setValue("None");
+    }
+
     // update user table, retuchatroomrn  id
-    public String addFriend(String uid1, String uid2){
+    public String addFriend(final String uid1, final String uid2, final MyCallBack myCallback){
         // create chatroom
         mChatDatabase = FirebaseDatabase.getInstance().getReference("p2pChat");
-        String chatroom_id = mChatDatabase.push().getKey();
+        final String chatroom_id = mChatDatabase.push().getKey();
 
         mChatDatabase.child(chatroom_id).child("uid1").setValue(uid1);
         mChatDatabase.child(chatroom_id).child("uid2").setValue(uid2);
@@ -129,8 +275,8 @@ public class FirebaseModel {
 
         // update friends
         mFriendDatabase = FirebaseDatabase.getInstance().getReference("friend");
-        String new_id1 = mFriendDatabase.push().getKey();
 
+        String new_id1 = mFriendDatabase.push().getKey();
         mFriendDatabase.child(new_id1).child("uid1").setValue(uid1);
         mFriendDatabase.child(new_id1).child("uid2").setValue(uid2);
         mFriendDatabase.child(new_id1).child("chatroom_id").setValue(chatroom_id);
@@ -144,12 +290,12 @@ public class FirebaseModel {
     }
 
     public void getComments(String uid, final MyCallBack myCallback){
-        comments.clear();
         Query firebaseSearchQuery = mCommentDatabase.child(uid);
 
         firebaseSearchQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                comments.clear();
                 if(dataSnapshot.exists()){
                     for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                         Comment comment = snapshot.getValue(Comment.class);
@@ -158,6 +304,8 @@ public class FirebaseModel {
 
                     myCallback.onCallback(comments);
                 }
+                else
+                    myCallback.onCallback(null);
             }
 
             @Override
@@ -196,6 +344,34 @@ public class FirebaseModel {
         return;
     }
 
+    public void getSingleUser(String uid, final MyCallBack myCallback){
+        users.clear();
+        Query firebaseSearchQuery = mUserDatabase.orderByChild("uid").equalTo(uid);
+
+        firebaseSearchQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = new User();
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        user = snapshot.getValue(User.class);
+                    }
+
+                    myCallback.onCallback(user);
+                }
+                else
+                    myCallback.onCallback(null);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return;
+    }
+
     public void afterLogin(final MyCallBack myCallback){
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
 
@@ -209,6 +385,36 @@ public class FirebaseModel {
                 }
                 else
                     myCallback.onCallback(false);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void updateUser(final User user, final MyCallBack myCallback){
+        updateFlag = false;
+        Query query = mUserDatabase.orderByChild("uid").equalTo(user.getUid());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(updateFlag == false){
+                    updateFlag = true;
+
+                    if(dataSnapshot.exists()){
+                        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                            snapshot.getRef().setValue(user);
+                        }
+
+                        myCallback.onCallback(true);
+                    }
+                    else {
+                        mUserDatabase.push().setValue(user);
+                        myCallback.onCallback(false);
+                    }
+                }
             }
 
             @Override

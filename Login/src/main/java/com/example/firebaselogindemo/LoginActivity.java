@@ -1,9 +1,9 @@
 package com.example.firebaselogindemo;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -20,6 +20,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -36,7 +37,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.codelab.friendlychat.model.FirebaseModel;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.android.gms.auth.api.Auth;
 
 import org.json.JSONObject;
 
@@ -146,12 +146,14 @@ public class LoginActivity extends AppCompatActivity implements
                                                 emailSignInFlag = true;
                                                 // navigate to profile change
                                                 if(new_user == true){
-                                                    startActivity(new Intent(LoginActivity.this, CreateProfileActivity.class));
+                                                    startActivity(new Intent(LoginActivity.this, SettingsActivity.class));
+                                                    finish();
                                                 }
                                                 else{   // navigate to main page
                                                     try {
                                                         Intent myIntent = new Intent(LoginActivity.this, Class.forName("com.example.myapplication.MainActivity"));
                                                         startActivity(myIntent);
+                                                        finish();
                                                     } catch (ClassNotFoundException e) {
                                                         e.printStackTrace();
                                                     }
@@ -221,7 +223,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     //after loggin --> go to "Create Profile" page
     private void mainpageUI(){
-        Toast.makeText(LoginActivity.this,"you are logged in",Toast.LENGTH_LONG).show();
+        Toast.makeText(LoginActivity.this,"You are now logged in",Toast.LENGTH_LONG).show();
 
 
         model.afterLogin(new FirebaseModel.MyCallBack() {
@@ -231,13 +233,15 @@ public class LoginActivity extends AppCompatActivity implements
 
                 // navigate to profile change
                 if(new_user == true){
-                    startActivity(new Intent(LoginActivity.this, CreateProfileActivity.class));
+                    startActivity(new Intent(LoginActivity.this, SettingsActivity.class));
+                    finish();
                 }
                 // navigate to main page
                 else{
                     try {
-                        Intent myIntent = new Intent(LoginActivity.this, Class.forName("com.example.myapplication.MainActivity"));
+                        Intent myIntent = new Intent(LoginActivity.this, Class.forName("com.example.myapplication.Splash"));
                         startActivity(myIntent);
+                        finish();
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -265,6 +269,7 @@ public class LoginActivity extends AppCompatActivity implements
                 mFirebaseUser = mFirebaseAuth.getCurrentUser();
                 if (mFirebaseUser == null) {
                     startActivity(new Intent(this, LoginActivity.class));
+                    finish();
                     return;
                 }
 
@@ -279,13 +284,17 @@ public class LoginActivity extends AppCompatActivity implements
 
                         // navigate to profile change
                         if(new_user == true){
-                            startActivity(new Intent(LoginActivity.this, CreateProfileActivity.class));
+                            //
+                            //startActivity(new Intent(LoginActivity.this, CreateProfileActivity.class));
+                            startActivity(new Intent(LoginActivity.this, SettingsActivity.class));
+                            finish();
                         }
                         // navigate to main page
                         else{
                             try {
                                 Intent myIntent = new Intent(LoginActivity.this, Class.forName("com.example.myapplication.MainActivity"));
                                 startActivity(myIntent);
+                                finish();
                             } catch (ClassNotFoundException e) {
                                 e.printStackTrace();
                             }
@@ -316,19 +325,17 @@ public class LoginActivity extends AppCompatActivity implements
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mFirebaseAuth.getCurrentUser();
 
-                            //store user info based on facebook account profile
-                            mFirebaseUser = mFirebaseAuth.getCurrentUser();
-                            userInfo userInfo = new userInfo();
-                            userInfo.setUid(mFirebaseUser.getUid());
-                            userInfo.setUserName(uname);
-                            userInfo.setGender(ugender);
-                            userInfo.setEmail(uemail);
-                            userInfo.setPicUrl(upicUrl);
-
-                            //upload structured user info
-                            FirebaseDatabase.getInstance().getReference().child("Users").push().setValue(userInfo);
+//                            //store user info based on facebook account profile
+//                            mFirebaseUser = mFirebaseAuth.getCurrentUser();
+//                            userInfo userInfo = new userInfo();
+//                            userInfo.setUid(mFirebaseUser.getUid());
+//                            userInfo.setUserName(uname);
+//                            userInfo.setGender(ugender);
+//                            userInfo.setEmail(uemail);
+//                            userInfo.setPicUrl(upicUrl);
+//                            //upload structured user info
+//                            FirebaseDatabase.getInstance().getReference().child("Users").push().setValue(userInfo);
 
                             mainpageUI();
                         } else {
